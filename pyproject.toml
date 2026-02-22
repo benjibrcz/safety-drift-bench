@@ -3,9 +3,9 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "driftbench"
+name = "safetydriftbench"
 version = "0.1.0"
-description = "DriftBench: measuring LLM safety-rule drift over long conversations"
+description = "SafetyDriftBench: measuring LLM safety-rule drift over long conversations"
 readme = "README.md"
 requires-python = ">=3.11"
 license = "MIT"

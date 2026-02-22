@@ -1,8 +1,8 @@
-# DriftBench (Apple Rule Demo)
+# SafetyDriftBench (Apple Rule Demo)
 
 **Does an LLM violate a simple safety rule more often as conversations get longer?**
 
-DriftBench is a minimal, reproducible benchmark that measures *safety-rule drift* — the tendency for language models to gradually forget or break explicit constraints over extended multi-turn conversations.
+SafetyDriftBench is a minimal, reproducible benchmark that measures *safety-rule drift* — the tendency for language models to gradually forget or break explicit constraints over extended multi-turn conversations.
 
 ## The Experiment
 
