@@ -1,0 +1,28 @@
+# Judge-ensemble config for scripts/score_transcripts.py
+# -------------------------------------------------------
+# Three judges from different providers so ensemble disagreement
+# reflects actual rubric ambiguity rather than within-family bias.
+# All go through OpenRouter in this config; api_key is read from the
+# OPENROUTER_API_KEY env var (set in .env).
+
+judge:
+  cache_path: judge_cache.db
+
+  judges:
+    - model_name: anthropic/claude-sonnet-4.6
+      backend: api
+      base_url: https://openrouter.ai/api/v1
+      temperature: 0.0
+      max_new_tokens: 400
+
+    - model_name: openai/gpt-5
+      backend: api
+      base_url: https://openrouter.ai/api/v1
+      temperature: 0.0
+      max_new_tokens: 400
+
+    - model_name: google/gemini-2.5-pro
+      backend: api
+      base_url: https://openrouter.ai/api/v1
+      temperature: 0.0
+      max_new_tokens: 400

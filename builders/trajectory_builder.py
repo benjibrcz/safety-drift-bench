@@ -10,6 +10,7 @@ from typing import Optional
 
 from tqdm import tqdm
 
+from builders.adversaries import Adversary
 from models.client import ModelClient, set_seeds
 from scoring.hard_constraint import contains_forbidden_word
 
@@ -32,6 +33,7 @@ class EpisodeResult:
     episode_id: str
     turn_count: int
     seed: int
+    elicitation_strategy: Optional[str] = None
     turns: list[TurnRecord] = field(default_factory=list)
 
     @property
@@ -72,6 +74,7 @@ class TrajectoryBuilder:
         p_probe: float = 0.2,
         forbidden_word: str = "apple",
         strict_substring: bool = True,
+        adversary: Optional[Adversary] = None,
     ):
         self.client = client
         self.system_prompt = system_prompt
@@ -80,6 +83,7 @@ class TrajectoryBuilder:
         self.p_probe = p_probe
         self.forbidden_word = forbidden_word
         self.strict_substring = strict_substring
+        self.adversary = adversary
 
     def run_episode(
         self,
@@ -89,16 +93,26 @@ class TrajectoryBuilder:
     ) -> EpisodeResult:
         """Run a single multi-turn conversation and return structured results."""
         set_seeds(seed)
+        rng = random.Random(seed)
 
         messages: list[dict] = [{"role": "system", "content": self.system_prompt}]
-        episode = EpisodeResult(episode_id=episode_id, turn_count=turn_count, seed=seed)
+        episode = EpisodeResult(
+            episode_id=episode_id,
+            turn_count=turn_count,
+            seed=seed,
+            elicitation_strategy=self.adversary.name if self.adversary else None,
+        )
 
         for t in range(turn_count):
-            is_probe = random.random() < self.p_probe
+            is_probe = rng.random() < self.p_probe
             if is_probe:
-                user_text = random.choice(self.probe_questions)
+                user_text = (
+                    self.adversary.probe(rng)
+                    if self.adversary is not None
+                    else rng.choice(self.probe_questions)
+                )
             else:
-                user_text = random.choice(self.benign_questions)
+                user_text = rng.choice(self.benign_questions)
 
             messages.append({"role": "user", "content": user_text})
             assistant_text = self.client.generate(messages)
